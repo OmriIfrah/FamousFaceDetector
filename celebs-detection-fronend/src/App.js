@@ -7,7 +7,7 @@ import Rank from './components/Rank/Rank';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Register from './components/Register/Register';
 import ParticlesBg from 'particles-bg'
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 
 function App() {
   const [input, setInput] = useState("");
@@ -15,13 +15,13 @@ function App() {
   const [box, setBox] = useState({});
   const [route, setRoute] = useState("signin");
   const [user, setUser] = useState({
-    id : '',
+    id: '',
     name: '',
     email: '',
     password: '',
     entries: 0,
-    joined : ''
-});
+    joined: ''
+  });
 
   const loadUser = (user) => {
     setUser({
@@ -33,39 +33,44 @@ function App() {
     });
   }
 
+
   const onInputChange = (event) => {
     setInput(event.target.value);
   }
 
 
   const calculateFaceLocation = (data) => {
-    const image = document.getElementById('inputimage')
-    const width = Number(image.width);
-    const height = Number(image.height);
-    
-    const concepts = data.outputs[0].data.regions[0].data.concepts[0];
-    const region = data.outputs[0].data.regions[0];
-    // Access the bounding box coordinates
-    const boundingBox = region.region_info.bounding_box;
-
-    return {
-      leftCol: boundingBox.left_col * width,
-      topRow: boundingBox.top_row * height,
-      rightCol: (1 - boundingBox.right_col) * width,
-      bottomRow: (1 - boundingBox.bottom_row) * height,
-      name: concepts.name,
-      per: concepts.value
+    const image = document.getElementById('inputimage');
+    if (image && data.outputs && data.outputs.length > 0 && data.outputs[0].data.regions && data.outputs[0].data.regions.length > 0) {
+      const width = Number(image.width);
+      const height = Number(image.height);
+      const region = data.outputs[0].data.regions[0];
+      if (region.region_info && region.region_info.bounding_box) {
+        const boundingBox = region.region_info.bounding_box;
+        const leftCol = boundingBox.left_col * width;
+        const topRow = boundingBox.top_row * height;
+        const rightCol = (1 - boundingBox.right_col) * width;
+        const bottomRow = (1 - boundingBox.bottom_row) * height;
+        const concepts = region.data.concepts[0];
+        return {
+          leftCol: leftCol,
+          topRow: topRow,
+          rightCol: rightCol,
+          bottomRow: bottomRow,
+          name: concepts.name,
+          per: concepts.value
+        };
+      }
     }
+    return null;
   }
 
-  const displayFaceBox = (box1) => {
-    setBox(box1);
+  const displayFaceBox = (box) => {
+    setBox(box);
   }
 
   const onButtonSubmit = () => {
     setImageUrl(input);
-    // URL of image to use. Change this to your image.
-
     const raw = JSON.stringify({
       "user_app_id": {
         "user_id": "omriif5",
@@ -75,7 +80,7 @@ function App() {
         {
           "data": {
             "image": {
-              "url": imageUrl
+              "url": input
             }
           }
         }
@@ -86,7 +91,7 @@ function App() {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Authorization': 'Key ' + 'faa8105ee401465c9966e060863f643f'
+        'Authorization': 'Key faa8105ee401465c9966e060863f643f'
       },
       body: raw
     };
@@ -98,30 +103,49 @@ function App() {
     fetch(`https://api.clarifai.com/v2/models/celebrity-face-detection/versions/2ba4d0b0e53043f38dbbed49e03917b6/outputs`, requestOptions)
       .then(response => response.json())
       .then(result => {
-        fetch('http://localhost:3001/image',{
-          method: 'put',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-           id: user.id,
+        if (result) {
+          fetch('http://localhost:3001/image', {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: user.id,
+            })
           })
-        })
-        .then(response => response.json())
-        .then(count => {
-          setUser(prevState => ({
-            ...prevState,
-            entries: count
-          }));
-        })
-                
+            .then(response => response.json())
+            .then(count => {
+              setUser(prevState => ({
+                ...prevState,
+                entries: count
+              }));
+            })
+            .catch(console.log);
+        }
         displayFaceBox(calculateFaceLocation(result))
       })
       .catch(error => console.log('error', error));
 
+  };
+
+  const handleLogout = () => {
+    // Reset user state to initial values
+    setImageUrl("");
+    setUser({
+      id: '',
+      name: '',
+      email: '',
+      password: '',
+      entries: 0,
+      joined: ''
+    });
+    setBox({});
 
   };
 
-  const onRouteChange = (word) => {
-    setRoute(word);
+  const onRouteChange = (route) => {
+    if (route === 'signin') {
+      handleLogout();
+    }
+    setRoute(route);
   }
 
   return (
@@ -131,12 +155,15 @@ function App() {
         <div>
           <Navigation onRouteChange={onRouteChange} />
           <Logo />
-          <Rank name={user.name} entries={user.entries}/>
+          <Rank name={user.name} entries={user.entries} />
           <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit} />
           <FaceRecognition imageUrl={imageUrl} box={box} />
         </div>
-        : (route === "signin" ? <Signin onRouteChange={onRouteChange} loadUser={loadUser}/> :
-          <Register onRouteChange={onRouteChange} loadUser={loadUser} />)
+        : (
+          route === "signin"
+            ? <Signin onRouteChange={onRouteChange} loadUser={loadUser} />
+            : <Register onRouteChange={onRouteChange} loadUser={loadUser} />
+        )
       }
 
     </div>

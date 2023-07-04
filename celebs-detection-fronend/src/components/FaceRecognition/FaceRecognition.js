@@ -2,7 +2,7 @@ import React from 'react';
 import './FaceRecognition.css';
 
 const FaceRecognition = ({ imageUrl, box }) => {
-  if (box || box.topRow || box.rightCol || box.bottomRow || box.leftCol || imageUrl) {
+  if (box && imageUrl) {
     return (
       <div className='center ma'>
         <div className='absolute mt2'>
@@ -18,6 +18,9 @@ const FaceRecognition = ({ imageUrl, box }) => {
         </div>
       </div>
     );
+  }
+  else {
+    return null;
   }
 }
 

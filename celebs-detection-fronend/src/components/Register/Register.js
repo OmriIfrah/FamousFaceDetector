@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Register = ({ onRouteChange,  loadUser}) => {
+const Register = ({ onRouteChange, loadUser }) => {
   const [signInName, setSignInName] = useState("");
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
@@ -18,26 +18,22 @@ const Register = ({ onRouteChange,  loadUser}) => {
   }
 
   const onSubmitRegister = () => {
-    fetch('http://localhost:3001/register',{
-    method: 'post',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      name: signInName,
-      email: signInEmail,
-      password: signInPassword
+    fetch('http://localhost:3001/register', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: signInName,
+        email: signInEmail,
+        password: signInPassword
+      })
     })
-  })
-  .then(response => response.json())
-  .then(user => {
-    if (user)
-    {
-      loadUser(user);
-      onRouteChange('home');
-    }
-    //console.log("data = " + user);
-  })
-  
-
+      .then(response => response.json())
+      .then(user => {
+        if (user.id) {
+          loadUser(user);
+          onRouteChange('home');
+        }
+      })
   }
 
   return (
@@ -48,20 +44,19 @@ const Register = ({ onRouteChange,  loadUser}) => {
             <legend className="f1 fw6 ph0 mh0">Sign In</legend>
             <div className="mt3">
               <label className="db fw6 lh-copy f6" htmlFor="name">Name</label>
-              <input onChange={onNameChange} className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="email" name="name" id="name"/>
+              <input onChange={onNameChange} className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="email" name="name" id="name" />
             </div>
             <div className="mt3">
               <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
-              <input onChange={onEmailChange} className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="email" name="email-address" id="email-address"/>
+              <input onChange={onEmailChange} className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="email" name="email-address" id="email-address" />
             </div>
             <div className="mv3">
               <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
-              <input onChange={onPasswordChange} className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="password" name="password" id="password"/>
+              <input onChange={onPasswordChange} className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="password" name="password" id="password" />
             </div>
-            <label className="pa0 ma0 lh-copy f6 pointer"><input type="checkbox"/> Remember me</label>
           </fieldset>
           <div className="lh-copy mt3">
-            <input onClick={onSubmitRegister} className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" type="submit" value="Sign in"/>
+            <input onClick={onSubmitRegister} className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" type="submit" value="Sign in" />
           </div>
         </div>
       </main>
