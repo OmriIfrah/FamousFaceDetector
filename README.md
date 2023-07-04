@@ -11,4 +11,8 @@ Designed and implemented the frontend user interface using HTML, CSS, and React 
 Developed the backend server using Node.js to handle user requests and communicate with the celebrity recognition API.
 Integrated the celebrity recognition API into the web application, enabling it to analyze images and provide accurate celebrity identification.
 Implemented user authentication and authorization functionalities to ensure secure access to the web application.
+<<<<<<< HEAD
 Set up a SQL database to store user information and maintain application data.
+=======
+Set up a SQL database to store user information and maintain application data.
+>>>>>>> origin/main
