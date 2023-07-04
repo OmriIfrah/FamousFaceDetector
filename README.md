@@ -16,10 +16,10 @@ In addition to the frontend and backend development, the backend utilizes Postgr
 Follow these steps to run the project on your local machine:
 
 1. Clone this repository.
-2. Run *npm install*
-3. Run *npm start*
-4. You must add your own API key in the *App.js* file to connect to Clarifai API
-5. Add your own database credentials in the *server.js* file
+2. Run `npm install`
+3. Run `npm start`
+4. You must add your own API key in the `App.js` file to connect to Clarifai API
+5. Add your own database credentials in the `server.js` file
 
 ** Make sure you use PostgreSQL for this code base.
 
